@@ -1,9 +1,13 @@
 import cv2
+import label_image
 
-webcam = cv2.VideoCapture(0)
 size = 4
 
+
+# We load the xml file
 classifier = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
+
+webcam = cv2.VideoCapture(0) #Using default WebCam connected to the PC.
 
 while True:
     (rval, im) = webcam.read()
@@ -14,11 +18,22 @@ while True:
 
     # detect MultiScale / faces 
     faces = classifier.detectMultiScale(mini)
-
     # Draw rectangles around each face
     for f in faces:
         (x, y, w, h) = [v * size for v in f] #Scale the shapesize backup
         cv2.rectangle(im, (x,y), (x+w,y+h), (0,255,0), 4)
+        
+        #Save just the rectangle faces in SubRecFaces
+        zoomed_Face = im[y:y+h, x:x+w]
+
+        CurrentFaceFile = "test.jpg" #Saving the current image from the webcam for testing.
+        cv2.imwrite(CurrentFaceFile, zoomed_Face)
+        
+        text = label_image.main(CurrentFaceFile)# Getting the Result from the label_image file, i.e., Classification Result.
+        text = text.title()# Title Case looks Stunning.
+        font = cv2.FONT_HERSHEY_TRIPLEX
+        cv2.putText(im, text,(x+w,y), font, 1, (0,0,255), 2)
+
     # Show the image
     cv2.imshow('Capture',   im)
     key = cv2.waitKey(10)
