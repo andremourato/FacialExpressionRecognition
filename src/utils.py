@@ -41,18 +41,23 @@ def facecrop(image):
     except:
         pass
 
-def format_faces():
-    emotions = os.listdir(main_directory)
-    for emotion in emotions:
-        emotion_path = os.path.join(main_directory,emotion)
-        print(emotion_path)
-        images = os.listdir(emotion_path)
-        i = 0
-        for img in images:
-            file = os.path.join(emotion_path,img)
-            print ('Cropping ',file)
-            facecrop(file)
-            i += 1   
+def format_faces(face_images=None):
+    if not face_images:
+        emotions = os.listdir(main_directory)
+        for emotion in emotions:
+            emotion_path = os.path.join(main_directory,emotion)
+            print(emotion_path)
+            images = os.listdir(emotion_path)
+            i = 0
+            for img in images:
+                file = os.path.join(emotion_path,img)
+                print ('Cropping ',file)
+                facecrop(file)
+                i += 1   
+    else:
+        for img in face_images:
+            print ('Cropping ',img)
+            facecrop(img)
 
 def train_emotion_from_webcam(person_name,emotion,MAX_PHOTOS=50):
     # We load the xml file
@@ -60,6 +65,7 @@ def train_emotion_from_webcam(person_name,emotion,MAX_PHOTOS=50):
     webcam = cv2.VideoCapture(0) #Using default WebCam connected to the PC.
     num_photos_taken = 0
     size = 4
+    new_files_created = []
     while num_photos_taken < MAX_PHOTOS:
         (rval, im) = webcam.read()
         im=cv2.flip(im,1,0) #Flip to act as a mirror
@@ -76,20 +82,31 @@ def train_emotion_from_webcam(person_name,emotion,MAX_PHOTOS=50):
             CurrentFaceFile = "./images/%s/%s_%d.jpg"%(emotion,person_name,randint(0,100000000))
             cv2.imwrite(CurrentFaceFile, zoomed_Face)
             num_photos_taken += 1
+            new_files_created += [CurrentFaceFile]
             # Show the image
         cv2.imshow('Capture',   im)
         key = cv2.waitKey(10)
         # if Esc key is press then break out of the loop 
         if key == 27: #The Esc key
             break
-    format_faces()
+    format_faces(new_files_created)
 
 if __name__ == '__main__':
-    # format_faces()
-    if len(sys.argv) != 4:
-        print('Usage: python train_emotion.py <person-name> <emotion>')
+    if len(sys.argv) < 2:
+        print('Usage: python utils.py <function>')
         exit(1)
-    if sys.argv[2] not in emotions:
-        print('Emotion %s is not supported'%(sys.argv[2]))
+    #Usage: pytho1n utils.py train_emotion_from_webcam <person-name> <emotion>
+    if sys.argv[1] == 'train_emotion_from_webcam':
+        if len(sys.argv) < 4:
+            print('Usage: python utils.py train_emotion_from_webcam <person-name> <emotion>')
+            exit(1)
+        if sys.argv[3] not in emotions:
+            print('Emotion %s is not supported'%(sys.argv[3]))
+            exit(1)
+        train_emotion_from_webcam(sys.argv[2],sys.argv[3])
+    #Usage: python utils.py format_faces
+    elif sys.argv[1] == 'format_faces':
+        format_faces()
+    else:
+        print('Function ',sys.argv[1],' is not supported!')
         exit(1)
-    train_emotion_from_webcam(sys.argv[1],sys.argv[2])
