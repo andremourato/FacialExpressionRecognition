@@ -1,8 +1,58 @@
 import cv2
 import sys
+import os
 from random import randint
 
 emotions = ['Angry','Sad','Calm','Happy']
+main_directory = './images/'
+
+
+def facecrop(image):
+    ## Crops the face of a person from any image!
+
+    ## OpenCV XML FILE for Frontal Facial Detection using HAAR CASCADES.
+    facedata = "haarcascade_frontalface_alt.xml"
+    cascade = cv2.CascadeClassifier(facedata)
+
+    ## Reading the given Image with OpenCV
+    img = cv2.imread(image)
+
+    try:
+        ## Some downloaded images are of unsupported type and should be ignored while raising Exception, so for that
+        ## I'm using the try/except functions.
+
+        minisize = (img.shape[1],img.shape[0])
+        miniframe = cv2.resize(img, minisize)
+
+        faces = cascade.detectMultiScale(miniframe)
+        print('Found ',len(faces),' faces')
+        for f in faces:
+            x, y, w, h = [ v for v in f ]
+            cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+
+            sub_face = img[y:y+h, x:x+w]
+            
+            f_name = image.split('/')
+            f_name = f_name[-1]
+            ## Change here the Desired directory.
+            # new_file_name = os.path.join(main_directory,emotion,f_name)
+            cv2.imwrite(image, sub_face)
+            print ("Writing: " + image)
+    except:
+        pass
+
+def format_faces():
+    emotions = os.listdir(main_directory)
+    for emotion in emotions:
+        emotion_path = os.path.join(main_directory,emotion)
+        print(emotion_path)
+        images = os.listdir(emotion_path)
+        i = 0
+        for img in images:
+            file = os.path.join(emotion_path,img)
+            print ('Cropping ',file)
+            facecrop(file)
+            i += 1   
 
 def train_emotion_from_webcam(person_name,emotion,MAX_PHOTOS=50):
     # We load the xml file
@@ -32,9 +82,11 @@ def train_emotion_from_webcam(person_name,emotion,MAX_PHOTOS=50):
         # if Esc key is press then break out of the loop 
         if key == 27: #The Esc key
             break
+    format_faces()
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    # format_faces()
+    if len(sys.argv) != 4:
         print('Usage: python train_emotion.py <person-name> <emotion>')
         exit(1)
     if sys.argv[2] not in emotions:
