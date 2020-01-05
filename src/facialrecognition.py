@@ -45,18 +45,18 @@ while True:
         print('Camera not available or input file %s not found or image type not supported! Supported types are %s.'%(sys.argv[1],','.join(supported_image_types) ))
         exit(1)
     if not is_image or (is_image and i == 0):
-        # Resize the image to speed up detection
+        # Improve the performance by resizing the image
         mini = cv2.resize(im, (int(im.shape[1]/size), int(im.shape[0]/size)))
 
-        # gets all the faces
+        # Detects all the faces
         faces = classifier.detectMultiScale(mini)
         print('Detected %d faces'%len(faces))
-        # Draw rectangles around each face
+        # Draws green rectangles around each detected face
         for f in faces:
             (x, y, w, h) = [v * size for v in f] 
             cv2.rectangle(im, (x,y), (x+w,y+h), (0,255,0), 4)
             
-            #Save just the rectangle faces in SubRecFaces
+            #Extracts only the detected face from the image
             zoomed_Face = im[y:y+h, x:x+w]
 
             CurrentFaceFile = "test.jpg" 
