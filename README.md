@@ -25,3 +25,9 @@ To run the project using your webcam run:
 ``
 python facialrecognition.py
 ``
+
+Or specify the path of a video or image:
+
+``
+python facialrecognition.py [video-or-image-path]
+``
