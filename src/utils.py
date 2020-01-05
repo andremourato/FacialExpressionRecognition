@@ -3,7 +3,7 @@ import sys
 import os
 from random import randint
 
-emotions = ['Angry','Sad','Calm','Happy']
+emotions = ['Angry','Sad','Calm','Happy','Surprise']
 main_directory = './images/'
 
 
@@ -46,6 +46,9 @@ def format_faces(face_images=None):
         emotions = os.listdir(main_directory)
         for emotion in emotions:
             emotion_path = os.path.join(main_directory,emotion)
+            print(emotion_path)
+            print(os.path.exists(emotion_path))
+
             print(emotion_path)
             images = os.listdir(emotion_path)
             i = 0
@@ -95,11 +98,15 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: python utils.py <function>')
         exit(1)
-    #Usage: pytho1n utils.py train_emotion_from_webcam <person-name> <emotion>
+    #Usage: python utils.py train_emotion_from_webcam <person-name> <emotion>
     if sys.argv[1] == 'train_emotion_from_webcam':
         if len(sys.argv) < 4:
             print('Usage: python utils.py train_emotion_from_webcam <person-name> <emotion>')
             exit(1)
+        emotion_path = os.path.join(main_directory,sys.argv[3])
+        if not os.path.exists(emotion_path):
+            print('New emotion path created!')
+            os.mkdir(emotion_path)
         if sys.argv[3] not in emotions:
             print('Emotion %s is not supported'%(sys.argv[3]))
             exit(1)

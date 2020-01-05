@@ -116,6 +116,6 @@ def main(img):
 
   top_k = results.argsort()[-5:][::-1]
   labels = load_labels(label_file)
-
+  print('top_k ',top_k)
   for i in top_k:
     return labels[i]
