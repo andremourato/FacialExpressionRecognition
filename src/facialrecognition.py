@@ -29,7 +29,7 @@ while True:
         CurrentFaceFile = "test.jpg" #Saving the current image from the webcam for testing.
         cv2.imwrite(CurrentFaceFile, zoomed_Face)
         
-        text = label_image.main(CurrentFaceFile)# Getting the Result from the label_image file, i.e., Classification Result.
+        text = label_image.main(CurrentFaceFile)# Gets the corresponding label (angry,happy,etc.)
         text = text.title()
         font = cv2.FONT_HERSHEY_TRIPLEX
         cv2.putText(im, text,(x+w,y), font, 1, (0,0,255), 2)
