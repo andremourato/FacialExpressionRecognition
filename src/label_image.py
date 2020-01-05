@@ -5,6 +5,7 @@ from __future__ import print_function
 import argparse
 import sys
 import time
+import datetime
 
 import numpy as np
 import tensorflow as tf
@@ -40,8 +41,11 @@ def read_tensor_from_image_file(file_name, input_height=299, input_width=299,
   dims_expander = tf.expand_dims(float_caster, 0);
   resized = tf.image.resize_bilinear(dims_expander, [input_height, input_width])
   normalized = tf.divide(tf.subtract(resized, [input_mean]), [input_std])
+  start = time.time()
   sess = tf.Session()
   result = sess.run(normalized)
+  end=time.time()
+  # print('Time elapsed in normalized: %ds'%(end-start))
 
   return result
 
@@ -63,11 +67,14 @@ def main(img,graph,sess):
   input_layer = "input"
   output_layer = "final_result"
 
+  start = datetime.datetime.now()
   t = read_tensor_from_image_file(file_name,
                                   input_height=input_height,
                                   input_width=input_width,
                                   input_mean=input_mean,
                                   input_std=input_std)
+  end=datetime.datetime.now()-start
+  print('Time elapsed 1: %dms'%(end.microseconds/1000))
 
   input_name = "import/" + input_layer
   output_name = "import/" + output_layer
@@ -75,10 +82,10 @@ def main(img,graph,sess):
   output_operation = graph.get_operation_by_name(output_name);
 
 
-  start = time.time()
   results = sess.run(output_operation.outputs[0],
                     {input_operation.outputs[0]: t})
-  end=time.time()
+  end=datetime.datetime.now()-start
+  print('Time elapsed 2: %dms'%(end.microseconds/1000))
   results = np.squeeze(results)
 
   top_k = results.argsort()[-5:][::-1]
