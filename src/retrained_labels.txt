@@ -2,3 +2,4 @@ angry
 calm
 happy
 sad
+surprise
