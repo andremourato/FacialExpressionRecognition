@@ -47,7 +47,7 @@ with tf.Session(graph=graph,
             text = main(CurrentFaceFile,graph,sess)# Gets the corresponding label (angry,happy,etc.)
             text = text.title()
             font = cv2.FONT_HERSHEY_TRIPLEX
-            cv2.putText(im, text,(x+w,y), font, 1, (0,0,255), 2)
+            cv2.putText(im, text,(x+w,y), font, 1, (0,255,0), 2)
         
         # Show the image
         cv2.imwrite('output.jpg', im)
